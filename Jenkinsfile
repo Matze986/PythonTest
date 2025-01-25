@@ -15,7 +15,7 @@ pipeline {
     stage('hello') {
       steps {
         echo "Hi, execute it!"
-        sh 'python3 hello.py'
+        sh 'python3 hello.py "[1, 2, 3, 4, 5]"'
       }
     }
   }
