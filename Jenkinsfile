@@ -16,7 +16,7 @@ pipeline {
       steps {
         echo "Hi, execute it!"
         // Pass the PackageMetadata parameter to the Python script
-        sh 'python3 hello.py \'${PackageMetadata}\''
+        sh 'python3 hello.py \'${params.PackageMetadata}\''
       }
     }
   }
