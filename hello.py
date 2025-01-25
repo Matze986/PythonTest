@@ -1,10 +1,20 @@
 import sys
+import json
 
-def main(start):
-    print(f"The script has started with parameter: {start}")
+def main(package_metadata):
+    print(f"Received package metadata: {package_metadata}")
     
-# Define a list
+    # Parse the JSON string into a Python dictionary
+    metadata = json.loads(package_metadata)
+    print("Parsed metadata:")
 
-# Loop through the list and print each item
-for fruit in sys.argv[1]:
-    print(fruit)
+    # Iterate through the keys and values in the dictionary
+    for key, value in metadata.items():
+        print(f"Key: {key}, Value: {value}")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        package_metadata = sys.argv[1]
+        main(package_metadata)
+    else:
+        print("No package metadata provided.")
