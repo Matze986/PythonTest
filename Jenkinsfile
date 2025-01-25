@@ -7,7 +7,7 @@ pipeline {
     stage('hello') {
       steps {
         echo "Executing hello.py script"
-        sh "python3 hello.py '${PackageMetadata.replaceAll('\'', '\\\\\'')}'"
+        sh "python3 hello.py '${PackageMetadata}'"
       }
     }
   }
