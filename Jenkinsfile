@@ -15,7 +15,8 @@ pipeline {
     stage('hello') {
       steps {
         echo "Hi, execute it!"
-        sh 'python3 hello.py "[1, 2, 3, 4, 5]"'
+        // Pass the PackageMetadata parameter to the Python script
+        sh 'python3 hello.py \'${PackageMetadata}\''
       }
     }
   }
