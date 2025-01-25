@@ -16,7 +16,7 @@ pipeline {
       steps {
         echo "Executing hello.py script"
         // Use double quotes around the script call and escape the parameter
-        sh "python3 hello.py '${PackageMetadata}'"
+        sh "python3 hello.py '${PackageMetadata.replaceAll('\'', '\\\\\'')}'"
       }
     }
   }
