@@ -56,6 +56,8 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     # Remove trailing backslash and newline
     curl_command = curl_command.rstrip(" \\\n")
 
+    print(f"{curl_command}")
+
 
 if __name__ == "__main__":
     PackageMetadata = sys.argv[1]
