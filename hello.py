@@ -40,6 +40,8 @@ def build_form_data(parsed_data):
     # Remove trailing backslash and newline
     curl_command = curl_command.rstrip(" \\\n")
 
+    return curl_command
+
 
 def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     print(f"Start building ...")
