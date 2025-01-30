@@ -31,7 +31,7 @@ def build_form_data(parsed_data):
     print("Building form data object")
 
 
-def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl, parsed_data):
+def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     print(f"Start building ...")
     
     base_urls = get_base_package_service_url(BaseUrl)
