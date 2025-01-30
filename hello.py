@@ -97,6 +97,6 @@ if __name__ == "__main__":
     BaseUrl = sys.argv[4]
     # Parse JSON
     PackageMetadataAsJsonString = json.dumps(PackageMetadata)
-    #parsed_data = json.loads(json_string)
-    main(PackageMetadataAsJsonString, PackageContentS3Key, Email, BaseUrl, json_string)
+    parsed_data = json.loads(PackageMetadataAsJsonString)
+    main(PackageMetadata, PackageContentS3Key, Email, BaseUrl, parsed_data)
 
