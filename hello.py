@@ -32,7 +32,7 @@ def build_form_data(parsed_data, package_service_base_url, http_method=None, fil
     flattened_data = flatten_json(parsed_data)
 
     # Generate the curl command using --form
-    curl_command = f'curl -X POST "{package_service_base_url}" \\\n'
+    curl_command = f'curl -X "{http_method}" "{package_service_base_url}" \\\n'
     for key, value in flattened_data.items():
         curl_command += f'  --form "{key}={value}" \\\n'
 
@@ -72,8 +72,8 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
 
     if PackageContentS3Key:
         is_file_downloaded = download_package_file(PackageContentS3Key)
-    
-    curl_command = build_form_data(parsed_data, package_service_base_url)    
+    http_mode = "PUT"
+    curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
 
     print(f"{curl_command}")
 
