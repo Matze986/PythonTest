@@ -26,15 +26,18 @@ def get_base_package_service_url(base_url):
         return ["http://localhost:5006/", "http://host.docker.internal:9000/"]
     return [base_url]
 
-def build_form_data(parsed_data, package_service_base_url):
+def build_form_data(parsed_data, package_service_base_url, http_method=None, file_path=None):
     print("Building form data object")
     # Flatten JSON
     flattened_data = flatten_json(parsed_data)
 
     # Generate the curl command using --form
-    curl_command = 'curl -X POST "https://example.com/api" \\\n'
+    curl_command = f'curl -X POST "{package_service_base_url}" \\\n'
     for key, value in flattened_data.items():
         curl_command += f'  --form "{key}={value}" \\\n'
+
+    if file_path:
+        curl_command += f'  --form "file=@{file_path}" \\\n'
 
     # Remove trailing backslash and newline
     curl_command = curl_command.rstrip(" \\\n")
