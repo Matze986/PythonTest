@@ -32,9 +32,6 @@ json_string = '''
 }
 '''
 
-
-
-
 # Build form data object
 def flatten_json(obj, prefix=''):
     """Recursively flattens nested JSON into key-value pairs using dot notation and bracket indices."""
@@ -72,7 +69,7 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     minio_base_url = base_urls[1]
 
     # Flatten JSON
-    flattened_data = flatten_json(PackageContentS3Key)
+    flattened_data = flatten_json(PackageMetadata)
 
     # Generate the curl command using --form
     curl_command = 'curl -X POST "https://example.com/api" \\\n'
