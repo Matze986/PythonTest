@@ -79,7 +79,7 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     # Remove trailing backslash and newline
     curl_command = curl_command.rstrip(" \\\n")
 
-    print(curl_command)
+    print(f"Build comand: {curl_command}")
 
 
 if __name__ == "__main__":
