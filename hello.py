@@ -33,6 +33,9 @@ json_string = '''
 }
 '''
 
+
+
+
 # Build form data object
 def flatten_json(obj, prefix=''):
     """Recursively flattens nested JSON into key-value pairs using dot notation and bracket indices."""
@@ -62,7 +65,7 @@ def build_form_data(parsed_data):
     print("Building form data object")
 
 
-def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
+def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl, parsed_data):
     print(f"Start building ...")
     
     base_urls = get_base_package_service_url(BaseUrl)
@@ -70,7 +73,7 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     minio_base_url = base_urls[1]
 
     # Flatten JSON
-    flattened_data = flatten_json(PackageMetadata)
+    flattened_data = flatten_json(parsed_data)
 
     # Generate the curl command using --form
     curl_command = 'curl -X POST "https://example.com/api" \\\n'
@@ -80,19 +83,20 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     # Remove trailing backslash and newline
     curl_command = curl_command.rstrip(" \\\n")
 
-    print(f"Build comand: {curl_command}")
+    print(curl_command)
     result = subprocess.run(curl_command, capture_output=True, text=True)
 
     # Print output
     print("Response:", result.stdout)
     print("Error:", result.stderr)
 
-
 if __name__ == "__main__":
     PackageMetadata = sys.argv[1]
     PackageContentS3Key = sys.argv[2]
     Email = sys.argv[3]
-    BaseUrl = sys.argv[4]# Parse JSON
-    #parsed_data = json.loads(PackageMetadata)
-    main(PackageMetadata, PackageContentS3Key, Email, BaseUrl)
+    BaseUrl = sys.argv[4]
+    # Parse JSON
+    PackageMetadataAsJsonString = json.dumps(PackageMetadata)
+    #parsed_data = json.loads(json_string)
+    main(PackageMetadataAsJsonString, PackageContentS3Key, Email, BaseUrl, json_string)
 
