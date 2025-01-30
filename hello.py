@@ -29,6 +29,16 @@ def get_base_package_service_url(base_url):
 
 def build_form_data(parsed_data):
     print("Building form data object")
+    # Flatten JSON
+    flattened_data = flatten_json(parsed_data)
+
+    # Generate the curl command using --form
+    curl_command = 'curl -X POST "https://example.com/api" \\\n'
+    for key, value in flattened_data.items():
+        curl_command += f'  --form "{key}={value}" \\\n'
+
+    # Remove trailing backslash and newline
+    curl_command = curl_command.rstrip(" \\\n")
 
 
 def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
@@ -44,17 +54,8 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     except json.JSONDecodeError:
         print("Invalid JSON input")
         sys.exit(1)
-
-    # Flatten JSON
-    flattened_data = flatten_json(parsed_data)
-
-    # Generate the curl command using --form
-    curl_command = 'curl -X POST "https://example.com/api" \\\n'
-    for key, value in flattened_data.items():
-        curl_command += f'  --form "{key}={value}" \\\n'
-
-    # Remove trailing backslash and newline
-    curl_command = curl_command.rstrip(" \\\n")
+    
+    curl_command = build_form_data(parsed_data)    
 
     print(f"{curl_command}")
 
