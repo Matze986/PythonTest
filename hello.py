@@ -1,5 +1,6 @@
 import json
 import sys
+import subprocess
 
 # Sample JSON data
 json_string = '''
@@ -80,6 +81,11 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     curl_command = curl_command.rstrip(" \\\n")
 
     print(f"Build comand: {curl_command}")
+    result = subprocess.run(curl_command, capture_output=True, text=True)
+
+    # Print output
+    print("Response:", result.stdout)
+    print("Error:", result.stderr)
 
 
 if __name__ == "__main__":
