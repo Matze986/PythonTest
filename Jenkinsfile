@@ -10,7 +10,10 @@ pipeline {
     stage('hello') {
       steps {
         echo "Executing hello.py script"
-        sh "python3 hello.py '${PackageMetadata}' '${PackageContentS3Key}' '${Email}' '${BaseUrl}'"
+        def status = sh(script: "python3 hello.py '${PackageMetadata}' '${PackageContentS3Key}' '${Email}' '${BaseUrl}'", returnStatus: true)
+        if (status != 0) {
+            error "Python script failed!"
+        }
       }
     }
   }

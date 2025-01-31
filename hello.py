@@ -6,6 +6,7 @@ http_mode = "PUT"
 package_service_base_url = ""
 minio_base_url = ""
 s3_bucket_name = ""
+pipeline_state_success = False
 
 # Build form data object
 def flatten_json(obj, prefix=''):
@@ -47,10 +48,10 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
 
         # Remove trailing backslash and newline
         curl_command = curl_command.rstrip(" \\\n")
-        print("Building form data object completed.\n")
+        print("Building curl command completed.\n")
         
     except Exception:
-        print(f"Something went wrong on building formData object: {Exception}")
+        print(f"Something went wrong on building curl command: {Exception}")
 
     return curl_command
 
@@ -84,9 +85,17 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     if PackageContentS3Key:
         is_file_downloaded = download_package_file(PackageContentS3Key)
 
-    curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
+    curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)
+    pipeline_state_success = True
 
     print(f"{curl_command}")
+
+    if pipeline_state_success:
+        print("Script completed successfully")
+        sys.exit(0)  # Exit with success
+    
+    sys.exit(1)  # Exit with success
+
 
 
 
