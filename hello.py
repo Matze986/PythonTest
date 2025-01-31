@@ -5,6 +5,7 @@ import sys
 http_mode = "PUT"
 package_service_base_url = ""
 minio_base_url = ""
+s3_bucket_name = ""
 
 # Build form data object
 def flatten_json(obj, prefix=''):
@@ -26,35 +27,38 @@ def flatten_json(obj, prefix=''):
     return flattened
 
 # Check BaseUrl
-def get_base_package_service_url(base_url):
+def get_base_urls(base_url):
     if "localhost" in base_url:
         return ["http://host.docker.internal:5006/", "http://host.docker.internal:9000/"]
     return [base_url]
 
 def build_form_data(parsed_data, url, http_method=None, file_path=None):
-    print("Building form data object")
+    print("Building form data object ...")
     # Flatten JSON
     flattened_data = flatten_json(parsed_data)
+    try:
+        # Generate the curl command using --form
+        curl_command = f'curl -X "{http_method}" "{url}" \\\n'
+        for key, value in flattened_data.items():
+            curl_command += f'  --form "{key}={value}" \\\n'
 
-    # Generate the curl command using --form
-    curl_command = f'curl -X "{http_method}" "{url}" \\\n'
-    for key, value in flattened_data.items():
-        curl_command += f'  --form "{key}={value}" \\\n'
+        if file_path:
+            curl_command += f'  --form "file=@{file_path}" \\\n'
 
-    if file_path:
-        curl_command += f'  --form "file=@{file_path}" \\\n'
-
-    # Remove trailing backslash and newline
-    curl_command = curl_command.rstrip(" \\\n")
+        # Remove trailing backslash and newline
+        curl_command = curl_command.rstrip(" \\\n")
+        print("Building form data object completed.\n")
+        
+    except Exception:
+        print(f"Something went wrong on building formData object: {Exception}")
 
     return curl_command
 
 def download_package_file(PackageContentS3Key):
     is_package_downloaded = False
     try:
-        print("Downloading ...")
+        print("Downloading ...\n")
         is_package_downloaded = True
-        print(f"Downloading of {PackageContentS3Key} was successful")
     except Exception:        
         print(f"Download failed: {Exception} ")
 
@@ -64,7 +68,7 @@ def download_package_file(PackageContentS3Key):
 def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     print(f"Start building ...")
     
-    base_urls = get_base_package_service_url(BaseUrl)
+    base_urls = get_base_urls(BaseUrl)
     package_service_base_url = base_urls[0]
     minio_base_url = base_urls[1]
     print(base_urls)
