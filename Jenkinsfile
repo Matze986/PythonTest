@@ -9,11 +9,13 @@ pipeline {
   stages {
     stage('hello') {
       steps {
-        echo "Executing hello.py script"
-        def status = sh(script: "python3 hello.py '${PackageMetadata}' '${PackageContentS3Key}' '${Email}' '${BaseUrl}'", returnStatus: true)
-        if (status != 0) {
-            error "Python script failed!"
-        }
+          script {
+              def status = sh(script: "python3 hello.py '${PackageMetadata}' '${PackageContentS3Key}' '${Email}' '${BaseUrl}'", returnStatus: true)
+
+              if (status != 0) {
+                  error("Python script failed!")  // Correct placement of error
+              }
+          }
       }
     }
   }
