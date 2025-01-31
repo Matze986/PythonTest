@@ -59,6 +59,7 @@ def download_package_file(PackageContentS3Key):
     try:
         print("Downloading ...\n")
         is_package_downloaded = True
+        print("Downloading finished successfully.\n")
     except Exception:        
         print(f"Download failed: {Exception} ")
 
