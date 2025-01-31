@@ -1,11 +1,7 @@
 import json
 import sys
 
-
 http_mode = "PUT"
-package_service_base_url = ""
-minio_base_url = ""
-s3_bucket_name = ""
 pipeline_state_success = False
 
 # Build form data object
@@ -31,12 +27,12 @@ def flatten_json(obj, prefix=''):
 def get_base_urls(base_url):
     if "localhost" in base_url:
         return ["http://host.docker.internal:5006/", "http://host.docker.internal:9000/"]
-    return [base_url]
+    return [base_url]  # Returns a single-item list if not localhost
 
 def build_form_data(parsed_data, url, http_method=None, file_path=None):
     print("Building form data object ...")
-    # Flatten JSON
     flattened_data = flatten_json(parsed_data)
+    
     try:
         # Generate the curl command using --form
         curl_command = f'curl -X "{http_method}" "{url}" \\\n'
@@ -46,34 +42,37 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
         if file_path:
             curl_command += f'  --form "file=@{file_path}" \\\n'
 
-        # Remove trailing backslash and newline
-        curl_command = curl_command.rstrip(" \\\n")
+        curl_command = curl_command.rstrip(" \\\n")  # Remove trailing backslash
         print("Building curl command completed.\n")
         
-    except Exception:
-        print(f"Something went wrong on building curl command: {Exception}")
+    except Exception as e:
+        print(f"Something went wrong while building curl command: {e}")
 
     return curl_command
 
 def download_package_file(PackageContentS3Key):
-    is_package_downloaded = False
     try:
+        if not PackageContentS3Key:
+            print("No package content provided. Skipping download.")
+            return False
+
         print("Downloading ...\n")
-        is_package_downloaded = True
         print("Downloading finished successfully.\n")
-    except Exception:        
-        print(f"Download failed: {Exception} ")
+        return True
 
-    return is_package_downloaded
-
+    except Exception as e:
+        print(f"Download failed: {e}")
+        return False
 
 def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
-    print(f"Start building ...")
+    print("Start building ...\n")
     
     base_urls = get_base_urls(BaseUrl)
     package_service_base_url = base_urls[0]
-    minio_base_url = base_urls[1]
-    print(base_urls)
+    minio_base_url = base_urls[1] if len(base_urls) > 1 else None  # Fixing IndexError
+    
+    print(f"Package Service URL: {package_service_base_url}")
+    print(f"MinIO URL: {minio_base_url if minio_base_url else 'Not applicable'}\n")
     
     # Parse JSON
     try:
@@ -86,26 +85,20 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
         is_file_downloaded = download_package_file(PackageContentS3Key)
 
     curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)
-    pipeline_state_success = True
-
-    print(f"{curl_command}")
-
-    if pipeline_state_success:
-        print("Script completed successfully")
-        sys.exit(0)  # Exit with success
     
-    sys.exit(1)  # Exit with success
+    print(f"{curl_command}\n")
 
-
-
-
+    print("Script completed successfully")
+    sys.exit(0)  # Exit with success
 
 if __name__ == "__main__":
+    if len(sys.argv) < 5:
+        print("Usage: python3 hello.py '<PackageMetadata>' '<PackageContentS3Key>' '<Email>' '<BaseUrl>'")
+        sys.exit(1)
+
     PackageMetadata = sys.argv[1]
     PackageContentS3Key = sys.argv[2]
     Email = sys.argv[3]
     BaseUrl = sys.argv[4]
-    
-    #json_string = json.dumps(parsed_data)
-    main(PackageMetadata, PackageContentS3Key, Email, BaseUrl)
 
+    main(PackageMetadata, PackageContentS3Key, Email, BaseUrl)
