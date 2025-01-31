@@ -1,7 +1,6 @@
 import json
 import sys
 
-
 http_mode = "PUT"
 package_service_base_url = ""
 minio_base_url = ""
@@ -52,19 +51,17 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
         
     except Exception:
         print(f"Something went wrong on building curl command: {Exception}")
+        sys.exit(1)
 
     return curl_command
 
 def download_package_file(PackageContentS3Key):
-    is_package_downloaded = False
     try:
-        print("Downloading ...\n")
-        is_package_downloaded = True
+        print(f"Downloading {PackageContentS3Key}...\n")
         print("Downloading finished successfully.\n")
     except Exception:        
         print(f"Download failed: {Exception} ")
-
-    return is_package_downloaded
+        sys.exit(1)
 
 
 def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
@@ -83,11 +80,13 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
         sys.exit(1)
 
     if PackageContentS3Key:
-        is_file_downloaded = download_package_file(PackageContentS3Key)
+        download_package_file(PackageContentS3Key)
+        curl_command = build_form_data(parsed_data, package_service_base_url, http_mode, PackageContentS3Key) 
+    else:
+        curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
 
-    curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
-
-    print(f"{curl_command}")
+    print(f"Finalized curl command: {curl_command}\n")
+    print("Sending curl command ...")
 
     if pipeline_state_success:
         print("Script completed successfully")
