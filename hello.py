@@ -28,7 +28,7 @@ def flatten_json(obj, prefix=''):
 # Check BaseUrl
 def get_base_package_service_url(base_url):
     if "localhost" in base_url:
-        return ["host.docker.internal:5006/", "http://host.docker.internal:9000/"]
+        return ["http://host.docker.internal:5006/", "http://host.docker.internal:9000/"]
     return [base_url]
 
 def build_form_data(parsed_data, url, http_method=None, file_path=None):
@@ -54,6 +54,7 @@ def download_package_file(PackageContentS3Key):
     try:
         print("Downloading ...")
         is_package_downloaded = True
+        print(f"Downloading of {PackageContentS3Key} was successful")
     except Exception:        
         print(f"Download failed: {Exception} ")
 
@@ -77,6 +78,7 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
 
     if PackageContentS3Key:
         is_file_downloaded = download_package_file(PackageContentS3Key)
+
     curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
 
     print(f"{curl_command}")
