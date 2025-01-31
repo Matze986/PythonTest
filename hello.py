@@ -1,6 +1,11 @@
 import json
 import sys
 
+
+http_mode = "PUT"
+package_service_base_url = ""
+minio_base_url = ""
+
 # Build form data object
 def flatten_json(obj, prefix=''):
     """Recursively flattens nested JSON into key-value pairs using dot notation and bracket indices."""
@@ -23,16 +28,16 @@ def flatten_json(obj, prefix=''):
 # Check BaseUrl
 def get_base_package_service_url(base_url):
     if "localhost" in base_url:
-        return ["http://localhost:5006/", "http://host.docker.internal:9000/"]
+        return ["host.docker.internal:5006/", "http://host.docker.internal:9000/"]
     return [base_url]
 
-def build_form_data(parsed_data, package_service_base_url, http_method=None, file_path=None):
+def build_form_data(parsed_data, url, http_method=None, file_path=None):
     print("Building form data object")
     # Flatten JSON
     flattened_data = flatten_json(parsed_data)
 
     # Generate the curl command using --form
-    curl_command = f'curl -X "{http_method}" "{package_service_base_url}" \\\n'
+    curl_command = f'curl -X "{http_method}" "{url}" \\\n'
     for key, value in flattened_data.items():
         curl_command += f'  --form "{key}={value}" \\\n'
 
@@ -72,7 +77,6 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
 
     if PackageContentS3Key:
         is_file_downloaded = download_package_file(PackageContentS3Key)
-    http_mode = "PUT"
     curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
 
     print(f"{curl_command}")

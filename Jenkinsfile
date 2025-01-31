@@ -10,7 +10,7 @@ pipeline {
     stage('hello') {
       steps {
         echo "Executing hello.py script"
-        sh "python3 hello.py '${PackageMetadata}' '2' '3' '${BaseUrl}'"
+        sh "python3 hello.py '${PackageMetadata}' '${PackageContentS3Key}' '${Email}' '${BaseUrl}'"
       }
     }
   }
