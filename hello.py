@@ -1,12 +1,6 @@
 import json
 import sys
 
-# Global variables (script-wide)
-http_mode = "PUT"
-package_service_base_url = ""
-minio_base_url = ""
-pipeline_state_success = False
-
 # Build form data object
 def flatten_json(obj, prefix=''):
     """Recursively flattens nested JSON into key-value pairs using dot notation and bracket indices."""
