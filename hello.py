@@ -34,6 +34,13 @@ def get_base_urls(base_url):
 
 def build_form_data(parsed_data, url, http_method=None, file_path=None):
     print("Building form data object ...")
+    
+    package_id = parsed_data.get("ID")
+    if package_id is None:
+        print("Warning: 'ID' is missing or null in the JSON data.\n")
+    else:
+        print(f"Package ID: {package_id}\n")
+        
     # Flatten JSON
     flattened_data = flatten_json(parsed_data)
     try:
