@@ -52,8 +52,6 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
     return curl_command
 
 def sending_curl_command(curl_command):
-    curl_command_state = False
-
     try:
         # Execute the curl command
         result = subprocess.run(
@@ -62,15 +60,11 @@ def sending_curl_command(curl_command):
             text=True,
             check=True
         )
-        # Print the raw response
-        print(result.stdout)
-
-        curl_command_state = True
 
     except subprocess.CalledProcessError as e:
         print(f"Error executing curl: {e}")
     
-    return curl_command_state
+    return result.stdout
 
 
 
