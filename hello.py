@@ -64,7 +64,7 @@ def sending_curl_command(curl_command):
     except subprocess.CalledProcessError as e:
         print(f"Error executing curl: {e}")
     
-    return result.stdout
+    return result
 
 
 
@@ -121,12 +121,12 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
             curl_command = build_form_data(parsed_data, destination_url, http_mode)     
 
     print(f"Finalized curl command: {curl_command}\n")
-    print("Sending curl command ...")
+    print(d"Sending curl command: {curl_command} ..."\n)
     response = sending_curl_command(curl_command)
-    print(response)
 
-    if response:
-        print("Script completed successfully")
+    if response.returncode :
+        print(f"Script completed successfully"\n)
+        print(f"Rsponse: {result.stdout}")
         sys.exit(0)  # Exit with success
 
     sys.exit(1)  # Exit with success
