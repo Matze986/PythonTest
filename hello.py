@@ -1,10 +1,10 @@
 import json
 import sys
 
+# Global variables (script-wide)
 http_mode = "PUT"
 package_service_base_url = ""
 minio_base_url = ""
-s3_bucket_name = ""
 pipeline_state_success = False
 
 # Build form data object
@@ -21,7 +21,7 @@ def flatten_json(obj, prefix=''):
             for index, value in enumerate(obj):
                 new_prefix = f"{prefix}[{index}]"  # Use bracket notation for indices
                 flattened.update(flatten_json(value, new_prefix))
-        case _:  # Default case (base values like int, str, bool)
+        case _:  
             flattened[prefix] = obj
 
     return flattened
@@ -43,7 +43,7 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
             curl_command += f'  --form "{key}={value}" \\\n'
 
         if file_path:
-            curl_command += f'  --form "file=@{file_path}" \\\n'
+            curl_command += f'  --form "file=@/tmp/{file_path}" \\\n'
 
         # Remove trailing backslash and newline
         curl_command = curl_command.rstrip(" \\\n")
@@ -55,7 +55,17 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
 
     return curl_command
 
-def download_package_file(PackageContentS3Key):
+def sending_curl_command(curl_command):
+    has_curl_succeeded = False
+
+    try:
+        print("ASDF")
+        has_curl_succeeded = True
+    except Exception:
+        print(f"Sending curl command failed: {Exception}")
+
+
+def download_package_file(minio_base_url, PackageContentS3Key):
     try:
         print(f"Downloading {PackageContentS3Key}...\n")
         print("Downloading finished successfully.\n")
@@ -79,18 +89,26 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
         print("Invalid JSON input")
         sys.exit(1)
 
-    if PackageContentS3Key:
-        download_package_file(PackageContentS3Key)
-        curl_command = build_form_data(parsed_data, package_service_base_url, http_mode, PackageContentS3Key) 
-    else:
-        curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)    
+    match PackageContentS3Key:
+        case str() if PackageContentS3Key:
+            # Checks if it's a non-empty string, download file and append to curl command form data object
+            download_package_file(minio_base_url, PackageContentS3Key)
+            curl_command = build_form_data(parsed_data, package_service_base_url, http_mode, PackageContentS3Key)
+        case _:
+            # Default case (None or empty string)
+            curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)     
 
     print(f"Finalized curl command: {curl_command}\n")
     print("Sending curl command ...")
+    response = sending_curl_command(curl_command)
+    print(response)
 
     if pipeline_state_success:
         print("Script completed successfully")
-        sys.exit(0)  # Exit with success  
+        sys.exit(0)  # Exit with success
+
+    sys.exit(1)  # Exit with success
+    
 
 if __name__ == "__main__":
     PackageMetadata = sys.argv[1]
