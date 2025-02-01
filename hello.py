@@ -121,7 +121,7 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
             curl_command = build_form_data(parsed_data, destination_url, http_mode)     
 
     print(f"Finalized curl command: {curl_command}\n")
-    print(f"Sending curl command: {curl_command} ..."\n)
+    print(f"Sending curl command: {curl_command} ...\n")
     response = sending_curl_command(curl_command)
 
     if response.returncode :
