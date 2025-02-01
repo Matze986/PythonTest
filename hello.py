@@ -103,7 +103,7 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     response = sending_curl_command(curl_command)
     print(response)
 
-    if pipeline_state_success:
+    if response:
         print("Script completed successfully")
         sys.exit(0)  # Exit with success
 
