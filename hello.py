@@ -124,12 +124,14 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     print(f"Sending curl command: {curl_command} ...\n")
     response = sending_curl_command(curl_command)
 
-    if response.returncode :
-        print(f"Script completed successfully\n")
-        print(f"Rsponse: {response.stdout}")
+    if response.returncode == 0:  # Check if curl was successful
+        print("Script completed successfully\n")
+        print(f"Response: {response.stdout}")
         sys.exit(0)  # Exit with success
-
-    sys.exit(1)  # Exit with success
+        
+    print("Curl command failed!\n")
+    print(f"Error: {response.stderr}")
+    sys.exit(1)  # Exit with failure
     
 
 if __name__ == "__main__":
