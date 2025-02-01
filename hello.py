@@ -35,12 +35,6 @@ def get_base_urls(base_url):
 def build_form_data(parsed_data, url, http_method=None, file_path=None):
     print("Building form data object ...")
     
-    package_id = parsed_data.get("ID")
-    if package_id is None:
-        print("Warning: 'ID' is missing or null in the JSON data.\n")
-    else:
-        print(f"Package ID: {package_id}\n")
-        
     # Flatten JSON
     flattened_data = flatten_json(parsed_data)
     try:
@@ -74,6 +68,7 @@ def sending_curl_command(curl_command):
     return has_curl_succeeded
 
 
+
 def download_package_file(minio_base_url, PackageContentS3Key):
     try:
         print(f"Downloading {PackageContentS3Key}...\n")
@@ -81,6 +76,14 @@ def download_package_file(minio_base_url, PackageContentS3Key):
     except Exception:        
         print(f"Download failed: {Exception} ")
         sys.exit(1)
+
+def build_package_service_endpoint_url(base_url, id=None):
+    if id is None:
+        build_destination_url = f"{base_url}/SFU/Package/FromJenkins"
+
+    build_destination_url = f"{base_url}/SFU/Package/{id}/FromJenkins"
+
+    return build_destination_url
 
 
 def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
@@ -96,16 +99,27 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
         parsed_data = json.loads(PackageMetadata)
     except json.JSONDecodeError:
         print("Invalid JSON input")
-        sys.exit(1)
+        sys.exit(1)    
+    
+    # Check http_method POST/PUR
+    package_id = parsed_data.get("ID")
+    if package_id is None:
+        print("Warning: 'ID' is missing or null in the JSON data.\n")
+        destination_url = build_package_service_endpoint_url(package_service_base_url)
+        http_mode = "POST"
+    else:
+        print(f"Package ID: {package_id}\n")
+        destination_url = build_package_service_endpoint_url(package_service_base_url, package_id)
+        http_mode = "PUT"
 
     match PackageContentS3Key:
         case str() if PackageContentS3Key:
             # Checks if it's a non-empty string, download file and append to curl command form data object
             download_package_file(minio_base_url, PackageContentS3Key)
-            curl_command = build_form_data(parsed_data, package_service_base_url, http_mode, PackageContentS3Key)
+            curl_command = build_form_data(parsed_data, destination_url, http_mode, PackageContentS3Key)
         case _:
             # Default case (None or empty string)
-            curl_command = build_form_data(parsed_data, package_service_base_url, http_mode)     
+            curl_command = build_form_data(parsed_data, destination_url, http_mode)     
 
     print(f"Finalized curl command: {curl_command}\n")
     print("Sending curl command ...")
