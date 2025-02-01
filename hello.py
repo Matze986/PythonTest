@@ -29,7 +29,7 @@ def flatten_json(obj, prefix=''):
 # Check BaseUrl
 def get_base_urls(base_url):
     if "localhost" in base_url:
-        return ["http://host.docker.internal:5006/", "http://host.docker.internal:9000/"]
+        return ["http://host.docker.internal:5006", "http://host.docker.internal:9000"]
     return [base_url]
 
 def build_form_data(parsed_data, url, http_method=None, file_path=None):
