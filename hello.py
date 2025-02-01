@@ -1,5 +1,6 @@
 import json
 import sys
+import subprocess
 
 # Build form data object
 def flatten_json(obj, prefix=''):
@@ -54,7 +55,15 @@ def sending_curl_command(curl_command):
     has_curl_succeeded = False
 
     try:
-        print("ASDF")
+        # Execute the curl command
+        result = subprocess.run(
+            ["curl", "-X", "GET", "https://api64.ipify.org?format=json"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        # Print the raw response
+        print(result.stdout)
         has_curl_succeeded = True
     except Exception:
         print(f"Sending curl command failed: {Exception}")
