@@ -52,7 +52,7 @@ def build_form_data(parsed_data, url, http_method=None, file_path=None):
     return curl_command
 
 def sending_curl_command(curl_command):
-    has_curl_succeeded = False
+    curl_command_state = False
 
     try:
         # Execute the curl command
@@ -64,11 +64,13 @@ def sending_curl_command(curl_command):
         )
         # Print the raw response
         print(result.stdout)
-        has_curl_succeeded = True
-    except Exception:
-        print(f"Sending curl command failed: {Exception}")
+
+        curl_command_state = True
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing curl: {e}")
     
-    return has_curl_succeeded
+    return curl_command_state
 
 
 
