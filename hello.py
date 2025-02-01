@@ -125,8 +125,8 @@ def main(PackageMetadata, PackageContentS3Key, Email, BaseUrl):
     response = sending_curl_command(curl_command)
 
     if response.returncode :
-        print(f"Script completed successfully"\n)
-        print(f"Rsponse: {result.stdout}")
+        print(f"Script completed successfully\n")
+        print(f"Rsponse: {response.stdout}")
         sys.exit(0)  # Exit with success
 
     sys.exit(1)  # Exit with success
