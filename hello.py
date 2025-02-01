@@ -63,6 +63,8 @@ def sending_curl_command(curl_command):
         has_curl_succeeded = True
     except Exception:
         print(f"Sending curl command failed: {Exception}")
+    
+    return has_curl_succeeded
 
 
 def download_package_file(minio_base_url, PackageContentS3Key):
